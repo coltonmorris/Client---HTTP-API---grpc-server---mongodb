@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package people;
+
+// need two services: one to getPeople from the db
+//		      one to write person to db
+
+//service definition
+service Writer {
+	rpc WritePerson (Person) returns (SuccessMessage) {}
+}
+service Getter {
+	//GetPersons() doesnt work, maybe put null in?
+	//Oh well, looks like grpc uses placeholders anyway, so using Person as one
+	rpc GetPersons (Person) returns (stream Person) {}
+}
+
+message Person {
+	string first = 1;
+}
+message SuccessMessage {
+	string msg = 1;
+}
+

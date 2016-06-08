@@ -39,16 +39,15 @@ class LikeButton extends React.Component {
     	data: JSON.stringify({first: firstName})
     })
     .done(function(data){
-	console.log(data);
 	//rerender table
-	//ReactDOM.render(<Table/>, document.getElementById('tablecontainer'));
+	ReactDOM.render(<Table/>, document.getElementById('tablecontainer'));
     })
     .fail(function(jqXHR,textStatus){
 	console.log("ERRRROR: " + textStatus);
     });
   }
   render() {
-    console.log("rendering textbox/button");
+    //console.log("rendering textbox/button");
     const text = this.state.liked ? 'like' : 'haven\'t liked';
     return (
       <div>
@@ -61,15 +60,19 @@ class LikeButton extends React.Component {
 }
 ReactDOM.render( <LikeButton />, document.getElementById('container'));
 
+//can create a <tr> component that table calls in its render
 var Table = React.createClass({
 	getInitialState: function() {
 		return { data: null };
 	},
 	render : function(){
-		console.log("rendering table");
+		//console.log("rendering table");
 		var rowComponents = this.generateRows();
+		//call gePeople to update our state and rerender... 
+		// there a way to call getPeople outside the class??
+		this.getPeople();
 		return (
-			<div onClick={this.handClick()}>
+			<div>
 			<table>
 			<thead>FIRST NAMES:</thead>
 			<tbody>
@@ -85,7 +88,7 @@ var Table = React.createClass({
 		//or, use parent component to conditionally render.
 		//updating state causes a re-render
 		if (this.state.data == null){
-			console.log("it's null, put up loading");
+			//console.log("it's null, put up loading");
 			return <tr>LOADING</tr>;
 		}
 		else{
@@ -95,38 +98,32 @@ var Table = React.createClass({
 			return rows;
 		}
 	},
-	handleClick : function(){
-		console.log("clicked");
-		$.ajax({
-			url: 'http://localhost:8080/people',
-			type: 'POST',
-			dataType: 'json',
-			contentType: 'application/json',
-		}).done(function(data){
-			this.setState({data: data});
-			console.log("ajax request done, setting state");
-			console.log(this.state.data);
-		}.bind(this)); //you must bind this so it has access to the state inside
-				// the call back
-	},
 	componentDidMount: function() {
+		this.getPeople();
+	},
+	getPeople : function(){
 		$.ajax({
 			url: 'http://localhost:8080/people',
 			type: 'POST',
 			dataType: 'json',
 			contentType: 'application/json',
 		}).done(function(data){
-			this.setState({data: data});
-			console.log("ajax request done, setting state");
-			console.log(this.state.data);
+			console.log("HERE IS THE DATA: ",data);
+			//check if state is different from data coming in
+			//if (this.state.data && this.state.data.length === data.length) {
+	//console.log("NOT CHANGING THE STATE");
+//}
+			//else {
+				//this.setState({data: data});
+				//console.log(this.state.data.length);
+			//}
+			//console.log("ajax request done, setting state");
 		}.bind(this)); //you must bind this so it has access to the state inside
 				// the call back
 	},
 		
 });
 ReactDOM.render(<Table/>, document.getElementById('tablecontainer'));
-
-//whenever the LikeButton is clicked, the table should be re rendered
 
 
 </script>
