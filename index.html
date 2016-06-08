@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="icon" href="data:;base64,=">
+    <meta charset="utf-8">
+    <title>RESTIFY | REACT | MONGO | NODE</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.0.1/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.16/browser.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/remarkable/1.6.2/remarkable.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    </div>
+    <div id="tablecontainer"></div>
+    </div>
+
+<script type="text/babel">
+// To get started with this tutorial running your own code, simply remove
+// the script tag loading scripts/example.js and start writing code here.
+
+class LikeButton extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+          liked: false
+    }
+    this.handleClick = this.handleClick.bind(this);
+  }
+  handleClick() {
+    this.setState({liked: !this.state.liked});
+    var firstName = document.getElementById("name").value;
+    $.ajax({
+    	url: 'http://localhost:8080/my_post',
+    	type: 'POST',
+    	dataType: 'json',
+    	contentType: 'application/json',
+    	data: JSON.stringify({first: firstName})
+    })
+    .done(function(data){
+	console.log(data);
+	//rerender table
+	//ReactDOM.render(<Table/>, document.getElementById('tablecontainer'));
+    })
+    .fail(function(jqXHR,textStatus){
+	console.log("ERRRROR: " + textStatus);
+    });
+  }
+  render() {
+    console.log("rendering textbox/button");
+    const text = this.state.liked ? 'like' : 'haven\'t liked';
+    return (
+      <div>
+      <input type='text' placeholder='add name to db' id="name" />
+      <br />
+      <button onClick={this.handleClick}> {text} </button>
+      </div>
+    );
+  }
+}
+ReactDOM.render( <LikeButton />, document.getElementById('container'));
+
+var Table = React.createClass({
+	getInitialState: function() {
+		return { data: null };
+	},
+	render : function(){
+		console.log("rendering table");
+		var rowComponents = this.generateRows();
+		return (
+			<div onClick={this.handClick()}>
+			<table>
+			<thead>FIRST NAMES:</thead>
+			<tbody>
+				{rowComponents}
+			</tbody>
+			</table>
+			</div>
+		);
+	},
+	generateRows : function(){
+		//call an ajax post request to server for list of peoples names	
+		//while waiting for the call, put up a loading text placeholder
+		//or, use parent component to conditionally render.
+		//updating state causes a re-render
+		if (this.state.data == null){
+			console.log("it's null, put up loading");
+			return <tr>LOADING</tr>;
+		}
+		else{
+			var rows = this.state.data.map(function(ele,i){
+				return <tr key={ele._id}>{ele.first}</tr>;		
+			});
+			return rows;
+		}
+	},
+	handleClick : function(){
+		console.log("clicked");
+		$.ajax({
+			url: 'http://localhost:8080/people',
+			type: 'POST',
+			dataType: 'json',
+			contentType: 'application/json',
+		}).done(function(data){
+			this.setState({data: data});
+			console.log("ajax request done, setting state");
+			console.log(this.state.data);
+		}.bind(this)); //you must bind this so it has access to the state inside
+				// the call back
+	},
+	componentDidMount: function() {
+		$.ajax({
+			url: 'http://localhost:8080/people',
+			type: 'POST',
+			dataType: 'json',
+			contentType: 'application/json',
+		}).done(function(data){
+			this.setState({data: data});
+			console.log("ajax request done, setting state");
+			console.log(this.state.data);
+		}.bind(this)); //you must bind this so it has access to the state inside
+				// the call back
+	},
+		
+});
+ReactDOM.render(<Table/>, document.getElementById('tablecontainer'));
+
+//whenever the LikeButton is clicked, the table should be re rendered
+
+
+</script>
+
+  </body>
+</html>

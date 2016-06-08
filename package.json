@@ -1,0 +1,28 @@
+{
+  "name": "restifytest",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "express": "^4.13.4",
+    "mongodb": "^2.1.21",
+    "mongoose": "^4.4.20",
+    "restify": "^4.1.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coltonmorris/restify.git"
+  },
+  "bugs": {
+    "url": "https://github.com/coltonmorris/restify/issues"
+  },
+  "homepage": "https://github.com/coltonmorris/restify#readme",
+  "description": ""
+}
