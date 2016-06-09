@@ -2,19 +2,15 @@ syntax = "proto3";
 
 package people;
 
-// need two services: one to getPeople from the db
-//		      one to write person to db
-
-//service definition
+//Used to write Person to db
 service Writer {
 	rpc WritePerson (Person) returns (SuccessMessage) {}
 }
+//Used to Get all the Persons from the db
 service Getter {
-	//GetPersons() doesnt work, maybe put null in?
-	//Oh well, looks like grpc uses placeholders anyway, so using Person as one
+	// GetPersons() is an error, so using Person as a placeholder
 	rpc GetPersons (Person) returns (stream Person) {}
 }
-
 message Person {
 	string first = 1;
 }

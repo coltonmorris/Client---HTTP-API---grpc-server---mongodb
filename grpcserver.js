@@ -18,29 +18,26 @@ var Name = mongoose.model('Name', {first: String, last: String});
  * Implements the WritePerson RPC method.
  */
 function writePerson(call, callback) {
-	console.log("in grpc server's writePerson heres the call: ",call);
 	var person = new Name({first:call.request.first,last:"MORRIS"});
 	person.save(function(err,data){
-	if (err) console.log(err);
-	else console.log("saved: " + data);
+		if (err) console.log(err);
+		else {
+			//callback(err,response)
+			callback(null, {msg: 'successful'});
+		}
 	});	
-
-	//callback(null, {message: 'Hello ' + call.request.name});
-	//callback(err,response)
-	callback(null, {msg: 'successful'});
 }
 /**
  * Implements the GetPersons RPC method
  */
-function getPersons(call, callback){
-	//console.log("in here too");
+function getPersons(call){
 	//Find every person from the Name collection
 	var promise = Name.find({}).exec().then(function(user){
-		//console.log(user);
-		//for (var i in user){
+		for (var i in user){
 			//returning a stream
-			callback(null,{first:user[0].first});
-		//};
+			call.write({first:user[i].first});
+		}
+		call.end();
 	});
 }
 
